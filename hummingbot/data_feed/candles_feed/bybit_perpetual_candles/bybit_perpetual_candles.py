@@ -108,9 +108,9 @@ class BybitPerpetualCandles(CandlesBase):
                 raise
             except Exception:
                 self.logger().exception(
-                    "Unexpected error occurred when getting historical klines. Retrying in 1 seconds...",
+                    "Unexpected error occurred when getting historical klines. Retrying in 5 seconds...",
                 )
-                await self._sleep(1.0)
+                await self._sleep(5.0)
 
     async def _subscribe_channels(self, ws: WSAssistant):
         """
