@@ -82,7 +82,7 @@ class BybitPerpetualCandles(CandlesBase):
                                                        throttler_limit_id=CONSTANTS.CANDLES_ENDPOINT,
                                                        params=params)
 
-        ts = candles["result"]["list"]
+        ts = candles["result"]["list"][::-1]
         return np.array(ts).astype(float)
 
     async def fill_historical_candles(self):
@@ -141,7 +141,7 @@ class BybitPerpetualCandles(CandlesBase):
             data: Dict[str, Any] = ws_response.data
             # data will be None when the websocket is disconnected
             if data is not None and data.get("topic", "").startswith("kline"):
-                timestamp = int(data["data"][0]["timestamp"])
+                timestamp = int(data["data"][0]["start"])
                 open = float(data["data"][0]["open"])
                 low = float(data["data"][0]["low"])
                 high = float(data["data"][0]["high"])
