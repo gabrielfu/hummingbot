@@ -24,6 +24,7 @@ class BybitPerpetualCandles(CandlesBase):
         return cls._logger
 
     def __init__(self, trading_pair: str, interval: str = "1m", max_records: int = 150):
+        self.candle_reached_end = False
         super().__init__(trading_pair, interval, max_records)
 
     @property
@@ -53,6 +54,13 @@ class BybitPerpetualCandles(CandlesBase):
     @property
     def intervals(self):
         return CONSTANTS.INTERVALS
+    
+    @property
+    def is_ready(self):
+        """
+        This property returns a boolean indicating whether the _candles deque has reached its maximum length.
+        """
+        return len(self._candles) == self._candles.maxlen or self.candle_reached_end
 
     async def check_network(self) -> NetworkStatus:
         rest_assistant = await self._api_factory.get_rest_assistant()
@@ -109,6 +117,7 @@ class BybitPerpetualCandles(CandlesBase):
                         f"candles requested for {self.name}. "
                         f"Needed {self._candles.maxlen} rows but got {len(self._candles)}.",
                     )
+                    self.candle_reached_end = True
                     break
             except asyncio.CancelledError:
                 raise
